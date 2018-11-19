@@ -32,12 +32,11 @@ struct impl {
     require_auth(op.author);
 
     comments_index comments (_self, op.host);
-    auto idx = comments.template get_index<N(author)>();
+    
     goals_index goals (_goals, op.host);
     auto goal = goals.find(op.goal_id);
     eosio_assert(goal != goals.end(), "Goal is not exist or already closed");
     
-
     validate_permlink(op.permlink);
 
     comments.emplace(op.author, [&](auto &c){
@@ -48,6 +47,7 @@ struct impl {
       c.permlink = op.permlink;
       c.title = op.title;
       c.meta = op.meta;
+      c.created = eosio::time_point_sec(now());
     });
   }
 
@@ -58,11 +58,14 @@ struct impl {
 
     comments_index comments (_self, op.host);
     auto comment = comments.find(op.comment_id);
-
+    eosio_assert(comment->permlink == op.permlink, "Wrong permlink");
+    eosio_assert(comment->author == op.author, "Wrong author");
+    
     comments.modify(comment, op.author, [&](auto &c){
       c.body = op.body;
       c.title = op.title;
       c.meta = op.meta;
+      c.last_update = eosio::time_point_sec(now());
     });
   }
 
@@ -73,7 +76,10 @@ struct impl {
 
     comments_index comments (_self, op.host);
     auto comment = comments.find(op.comment_id);
-
+    
+    eosio_assert(comment->permlink == op.permlink, "Wrong permlink");
+    eosio_assert(comment->author == op.author, "Wrong author");
+    
     comments.erase(comment);
   }
 

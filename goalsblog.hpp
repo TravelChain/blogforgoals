@@ -68,6 +68,9 @@ namespace eosio {
         uint64_t id;
         uint64_t goal_id;
         account_name author;
+        eosio::time_point_sec created;
+        eosio::time_point_sec last_update;
+        
         std::string body;
         std::string permlink;
         std::string title;
@@ -76,7 +79,7 @@ namespace eosio {
         uint64_t primary_key() const {return id;}
         uint64_t by_author() const {return author;}
 
-        EOSLIB_SERIALIZE(comments, (id)(goal_id)(author)(body)(permlink)(title)(meta))
+        EOSLIB_SERIALIZE(comments, (id)(goal_id)(author)(created)(last_update)(body)(permlink)(title)(meta))
     };
 
     typedef eosio::multi_index<N(comments), comments,
@@ -88,7 +91,6 @@ namespace eosio {
     struct post {
         account_name host;
         uint64_t goal_id;
-
         account_name author;
         std::string body;
         std::string permlink;
@@ -102,10 +104,12 @@ namespace eosio {
         account_name host;
         account_name author;
         uint64_t comment_id;
+        uint64_t goal_id;
+        std::string permlink;
         std::string body;
         std::string title;
         std::string meta;
-        EOSLIB_SERIALIZE(edit, (host)(author)(comment_id)(body)(title)(meta))
+        EOSLIB_SERIALIZE(edit, (host)(author)(comment_id)(goal_id)(permlink)(body)(title)(meta))
     };
 
     //@abi action
@@ -113,8 +117,11 @@ namespace eosio {
         account_name host;
         account_name author;
         uint64_t comment_id;
+        uint64_t goal_id;
+        std::string permlink;
+        
 
-        EOSLIB_SERIALIZE(del, (host)(author)(comment_id))
+        EOSLIB_SERIALIZE(del, (host)(author)(comment_id)(goal_id)(permlink))
     };
 
  
