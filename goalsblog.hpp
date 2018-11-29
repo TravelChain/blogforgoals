@@ -21,6 +21,8 @@ namespace eosio {
     struct goals{
         uint64_t id;
         account_name username;
+        eosio::time_point_sec created;
+        
         bool activated = false;
         bool in_protocol = false;
         bool completed = false;
@@ -47,7 +49,7 @@ namespace eosio {
         account_name by_username() const {return username; }
         account_name by_host() const {return host;}
         uint64_t by_rotation_num() const {return rotation_num;}
-        EOSLIB_SERIALIZE( goals, (id)(username)(activated)(in_protocol)(completed)(reported)
+        EOSLIB_SERIALIZE( goals, (id)(username)(created)(activated)(in_protocol)(completed)(reported)
             (validated)(host)(lepts_for_each_pool)(shortdescr)(descr)(target)(activation_amount)
             (available)(report)(rotation_num)(total_votes)(voters)(balance_ids)(withdrawed))
     };
@@ -68,18 +70,20 @@ namespace eosio {
         uint64_t id;
         uint64_t goal_id;
         account_name author;
+        account_name parent_author;
         eosio::time_point_sec created;
         eosio::time_point_sec last_update;
         
         std::string body;
         std::string permlink;
+        std::string parent_permlink;
         std::string title;
         std::string meta;
 
         uint64_t primary_key() const {return id;}
         uint64_t by_author() const {return author;}
 
-        EOSLIB_SERIALIZE(comments, (id)(goal_id)(author)(created)(last_update)(body)(permlink)(title)(meta))
+        EOSLIB_SERIALIZE(comments, (id)(goal_id)(author)(created)(last_update)(body)(permlink)(parent_permlink)(title)(meta))
     };
 
     typedef eosio::multi_index<N(comments), comments,
@@ -92,11 +96,13 @@ namespace eosio {
         account_name host;
         uint64_t goal_id;
         account_name author;
+        account_name parent_author;
         std::string body;
         std::string permlink;
+        std::string parent_permlink;
         std::string title;
         std::string meta;
-        EOSLIB_SERIALIZE(struct post, (host)(goal_id)(author)(body)(permlink)(title)(meta))
+        EOSLIB_SERIALIZE(struct post, (host)(goal_id)(author)(parent_author)(body)(permlink)(parent_permlink)(title)(meta))
     };
 
     //@abi action

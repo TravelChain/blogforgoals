@@ -38,13 +38,16 @@ struct impl {
     eosio_assert(goal != goals.end(), "Goal is not exist or already closed");
     
     validate_permlink(op.permlink);
+    //validate_permlink(op.parent_permlink);
 
     comments.emplace(op.author, [&](auto &c){
       c.id = comments.available_primary_key();
       c.goal_id = op.goal_id;
       c.author = op.author;
+      c.parent_author = op.parent_author;
       c.body = op.body;
       c.permlink = op.permlink;
+      c.parent_permlink = op.parent_permlink;
       c.title = op.title;
       c.meta = op.meta;
       c.created = eosio::time_point_sec(now());
